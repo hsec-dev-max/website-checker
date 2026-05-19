@@ -19,11 +19,19 @@ def check_website(url):
             print(f"⚠️  Status  : {status} — Something is wrong")
         
         print(f"⚡ Speed   : {speed} seconds")
-        
+        check_ssl(url)
+
     except requests.exceptions.ConnectionError:
         print("❌ ERROR: Cannot reach the website")
     except requests.exceptions.Timeout:
         print("❌ ERROR: Website took too long to respond")
+
+def check_ssl(url):
+    if url.startswith("https://"):
+        print("🔒 SSL     : Secure ✅")
+    else:
+        print("⚠️  SSL     : Not Secure ❌")
+
 
 # --- Main ---
 while True:
