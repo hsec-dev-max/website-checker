@@ -20,6 +20,7 @@ def check_website(url):
         
         print(f"⚡ Speed   : {speed} seconds")
         check_ssl(url)
+        check_headers(url)
 
     except requests.exceptions.ConnectionError:
         print("❌ ERROR: Cannot reach the website")
@@ -32,6 +33,32 @@ def check_ssl(url):
     else:
         print("⚠️  SSL     : Not Secure ❌")
 
+def check_headers(url):
+    try:
+        response = requests.get(url, timeout=10)
+        headers = response.headers
+
+        print("\n🛡️  Security Headers:")
+
+        checks = {
+            "X-Frame-Options": "Clickjacking Protection",
+            "X-XSS-Protection": "XSS Protection",
+            "Strict-Transport-Security": "HTTPS Enforced",
+            "Content-Security-Policy": "Content Security"
+        }
+
+        score = 0
+        for header, description in checks.items():
+            if header in headers:
+                print(f"   ✅ {description}")
+                score += 1
+            else:
+                print(f"   ❌ {description} — Missing!")
+
+        print(f"\n   Score: {score}/4")
+
+    except:
+        pass
 
 # --- Main ---
 while True:
