@@ -1,5 +1,6 @@
 import requests
 import time
+from bs4 import BeautifulSoup
 
 def check_website(url):
     print(f"\n🔍 Checking: {url}")
@@ -21,6 +22,7 @@ def check_website(url):
         print(f"⚡ Speed   : {speed} seconds")
         check_ssl(url)
         check_headers(url)
+        check_broken_links(url)
 
     except requests.exceptions.ConnectionError:
         print("❌ ERROR: Cannot reach the website")
@@ -59,6 +61,35 @@ def check_headers(url):
 
     except:
         pass
+
+def check_broken_links(url):
+    try:
+        response = requests.get(url, timeout=10)
+        soup = BeautifulSoup(response.text, "html.parser")
+        links = soup.find_all("a")
+
+        print(f"\n🔗 Broken Links Check:")
+        broken = 0
+
+        for link in links:
+            href = link.get("href")
+            if href and href.startswith("http"):
+                try:
+                    r = requests.get(href, timeout=5)
+                    if r.status_code == 404:
+                        print(f"  ❌ BROKEN: {href}")
+                        broken += 1
+                except:
+                    print(f"  ⚠️  UNREACHABLE: {href}")
+                    broken += 1
+
+        if broken == 0:
+            print("  ✅ No broken links found!")
+        else:
+            print(f"\n  Total broken: {broken}")
+
+    except:
+        print("❌ Could not check links")
 
 # --- Main ---
 while True:
